@@ -11,10 +11,34 @@ function Search({
   setSearchToDate,
   keyword,
   setKeyword,
-  searchTodolist,
-  searchList
+  // searchTodolist, 교재에 없는데 지워야함
+  searchList,
+  setSearchList,
+  isEditDelete,
+  setIsEditDelete
 }) {
-  
+
+  const searchTodolist = () => {
+    axios
+      .get("http://localhost:4000/todolist", {
+        params: {},
+      })
+      .then((response) => {
+        let list = response.data.filter((data) => {
+          return keyword
+            ? searchFromDate <= data.date &&
+                data.date <= searchToDate &&
+                data.title.includes(keyword.trim())
+            : searchFromDate <= data.date && data.date <= searchToDate;
+        });
+        setSearchList(list);
+      });
+    return;
+  };
+
+  if (isEditDelete) {
+    searchTodolist();
+  }
 
   return (
     <div

@@ -1,9 +1,9 @@
 import { Outlet } from "react-router-dom";
 import MenuBar from "../components/MenuBar";
-const Layout = () => {
+const Layout = ({isLoggedIn, setIsLoggedIn})  => {
   return (
     <div>
-      <MenuBar />
+      <MenuBar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <main>
         <Outlet />
       </main>

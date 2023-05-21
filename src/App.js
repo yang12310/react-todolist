@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Search from "./pages/Search";
 import Layout from "./pages/Layout";
 import Form from "./pages/Form";
 import Home from './pages/Home';
+import Login from './pages/Login'
 import axios from "axios";
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(sessionStorage.getItem('todolist-loggedIn'));
+  const [isEditDelete, setIsEditDelete] = useState(false);
   const [createDate, setCreateDate] = useState(
     new Date(Date.now() - (new Date().getTimezoneOffset() * 60000)).toISOString().substring(0, 10)
     );
@@ -24,49 +27,40 @@ function App() {
   );
   const [keyword, setKeyword] = useState("");
   const [searchList, setSearchList] = useState([]);
-  const searchTodolist = () => {
-    axios
-      .get("http://localhost:4000/todolist", {
-        params: {},
-      })
-      .then((response) => {
-        let list = response.data.filter((data) => {
-          return keyword
-            ? searchFromDate <= data.date &&
-                data.date <= searchToDate &&
-                data.title.includes(keyword.trim())
-            : searchFromDate <= data.date && data.date <= searchToDate;
-        });
-        setSearchList(list);
-      });
-    return;
-  };
-
-
 
   return (
     <Routes>
-      <Route element={<Layout />}>
-        <Route path="/home" element={<Home 
-          createDate={createDate}
-          setCreateDate={setCreateDate}
-          searchListByDate={searchListByDate}
-          setSearchListByDate={setSearchListByDate}
-          />} 
-        />
-        <Route path="/" element={<Search 
-          searchFromDate={searchFromDate}
-          setSearchFromDate={setSearchFromDate}
-          searchToDate={searchToDate}
-          setSearchToDate={setSearchToDate}
-          keyword={keyword}
-          setKeyword={setKeyword}
-          searchTodolist={searchTodolist}
-          searchList={searchList}
-        />} />
-        <Route path="/form" element={<Form />} />
-      </Route>
-    </Routes>
+      <Route element={<Layout isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>}>
+        <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn}/>} />
+        <Route path="/home" element={ isLoggedIn ? 
+          <Home 
+            createDate={createDate}
+            setCreateDate={setCreateDate}
+            searchListByDate={searchListByDate}
+            setSearchListByDate={setSearchListByDate}
+          /> : <Navigate to="/" />
+        } 
+      />
+        <Route path="/search" element={ isLoggedIn ? 
+          <Search 
+            searchFromDate={searchFromDate}
+            setSearchFromDate={setSearchFromDate}
+            searchToDate={searchToDate}
+            setSearchToDate={setSearchToDate}
+            keyword={keyword}
+            setKeyword={setKeyword}
+            // searchTodolist={searchTodolist} 교재에 없는데 지워야함
+            searchList={searchList}
+            setSearchList={setSearchList}
+            isEditDelete={isEditDelete}
+            setIsEditDelete={setIsEditDelete}
+          /> : <Navigate to="/"/>
+        } 
+      />
+        <Route path="/form" element={
+          <Form setIsEditDelete={setIsEditDelete}/>} />
+        </Route>
+      </Routes>
   );
 }
 

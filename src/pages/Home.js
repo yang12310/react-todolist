@@ -52,7 +52,11 @@ function Home({
               justifyContent: "center",
             }}
           >
-            <ListAndForm searchList={searchListByDate} where={"daily"}/>
+            <ListAndForm 
+              searchList={searchListByDate} 
+              where={"daily"}
+              createDate = {createDate}
+            />
           </div>
         </Grid>
       </Grid>
